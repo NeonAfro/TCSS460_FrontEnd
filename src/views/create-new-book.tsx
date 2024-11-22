@@ -5,14 +5,14 @@ import React, { useState } from 'react';
 import { Box, Button, Drawer, Typography, TextField } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
+import axios from 'utils/axios';
 
 export default function RightDrawer() {
   const [isOpen, setIsOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState(''); // State for feedback message
 
   // Validation Schema for Formik
   const validationSchema = Yup.object({
-    newId: Yup.string().required('ID is required'),
     isbn13: Yup.string().required('ISBN-13 is required'),
     authors: Yup.string().required('Authors are required'),
     publication_year: Yup.number()
@@ -24,16 +24,29 @@ export default function RightDrawer() {
     image_small_url: Yup.string().url('Must be a valid URL'),
   });
 
-  const handleClick = async (values: any) => {
+  const handleClick = async (values: any, { resetForm }: any) => {
     try {
       // Axios POST request
-      const response = await axios.post('http://localhost:4000/c/books/book', values);
+      const response = await axios.post('/c/books/book', values);
       console.log('Success:', response.data);
 
-      // Close the drawer on success
-      setIsOpen(false);
+      // Show success message
+      setFeedbackMessage('Book was successfully created!');
+
+      // Close the drawer and reset the form after a short delay
+      setTimeout(() => {
+        setIsOpen(false);
+        setFeedbackMessage(''); // Clear message
+        resetForm(); // Reset form values
+      }, 2000);
     } catch (error) {
       console.error('Error:', error);
+
+      // Show error message
+      setFeedbackMessage('Invalid input. Please check the form and try again.');
+
+      // Keep the drawer open for user corrections
+      setTimeout(() => setFeedbackMessage(''), 3000); // Clear message after delay
     }
   };
 
@@ -77,10 +90,9 @@ export default function RightDrawer() {
           <Typography variant="h6" gutterBottom>
             Add New Book
           </Typography>
-          <HoverRating/>
+          <HoverRating />
           <Formik
             initialValues={{
-              newId: '',
               isbn13: '',
               authors: '',
               publication_year: '',
@@ -94,15 +106,6 @@ export default function RightDrawer() {
           >
             {({ errors, touched }) => (
               <Form>
-                <Field
-                  as={TextField}
-                  name="newId"
-                  label="New ID"
-                  fullWidth
-                  margin="normal"
-                  error={touched.newId && Boolean(errors.newId)}
-                  helperText={touched.newId && errors.newId}
-                />
                 <Field
                   as={TextField}
                   name="isbn13"
@@ -180,10 +183,28 @@ export default function RightDrawer() {
           </Formik>
         </Box>
       </Drawer>
+
+      {/* Feedback Message */}
+      {feedbackMessage && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 16,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: feedbackMessage.includes('successfully') ? 'green' : 'red',
+            color: 'white',
+            padding: '8px 16px',
+            borderRadius: 4,
+            zIndex: 1300,
+          }}
+        >
+          {feedbackMessage}
+        </Box>
+      )}
     </>
   );
 }
-
 
 
 // 'use client';

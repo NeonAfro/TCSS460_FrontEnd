@@ -12,7 +12,6 @@ export default function RightDrawer() {
 
   // Validation Schema for Formik
   const validationSchema = Yup.object({
-    newId: Yup.string().required('ID is required'),
     isbn13: Yup.string().required('ISBN-13 is required'),
     authors: Yup.string().required('Authors are required'),
     publication_year: Yup.number()
@@ -80,7 +79,6 @@ export default function RightDrawer() {
           <HoverRating/>
           <Formik
             initialValues={{
-              newId: '',
               isbn13: '',
               authors: '',
               publication_year: '',
@@ -94,15 +92,6 @@ export default function RightDrawer() {
           >
             {({ errors, touched }) => (
               <Form>
-                <Field
-                  as={TextField}
-                  name="newId"
-                  label="New ID"
-                  fullWidth
-                  margin="normal"
-                  error={touched.newId && Boolean(errors.newId)}
-                  helperText={touched.newId && errors.newId}
-                />
                 <Field
                   as={TextField}
                   name="isbn13"

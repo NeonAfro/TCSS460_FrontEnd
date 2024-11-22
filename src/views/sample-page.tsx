@@ -1,3 +1,4 @@
+'use client'
 // Material-UI imports
 import React, { useState } from 'react';
 import { IconButton, Typography, Box, Drawer, TextField, Button } from '@mui/material';

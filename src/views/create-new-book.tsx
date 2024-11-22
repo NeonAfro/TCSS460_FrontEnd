@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Box, Button, Drawer, Typography, TextField } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
+import axios from 'utils/axios';
 
 export default function RightDrawer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +26,7 @@ export default function RightDrawer() {
   const handleClick = async (values: any) => {
     try {
       // Axios POST request
-      const response = await axios.post('http://localhost:4000/c/books/book', values);
+      const response = await axios.post('/c/books/book', values);
       console.log('Success:', response.data);
 
       // Close the drawer on success

@@ -1,3 +1,5 @@
+"use client";
+
 import SignIn from 'views/auth/login';
 
 // ==============================|| PAGE ||============================== //

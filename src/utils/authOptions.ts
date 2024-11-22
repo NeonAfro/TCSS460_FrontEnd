@@ -51,7 +51,7 @@ export const authOptions: NextAuthOptions = {
             email: credentials?.email,
             role: 1,
             username: credentials?.email,
-            phone: '728-238-2380'
+            phone: '1282382380'
           });
 
           console.dir(user);

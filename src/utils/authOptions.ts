@@ -17,8 +17,8 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
           const user = await axios.post('/login', {
-            password: credentials?.password,
-            email: credentials?.email
+            email: credentials?.email,
+            password: credentials?.password
           });
           if (user) {
             user.data.user['accessToken'] = user.data.accessToken;
@@ -37,21 +37,21 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         firstname: { name: 'firstname', label: 'Firstname', type: 'text', placeholder: 'Enter Firstname' },
         lastname: { name: 'lastname', label: 'Lastname', type: 'text', placeholder: 'Enter Lastname' },
+        username: { name: 'username', label: 'Username', type: 'text', placeholder: 'Enter Username' },
         email: { name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' },
-        company: { name: 'company', label: 'Company', type: 'text', placeholder: 'Enter Company' },
-        password: { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' }
+        password: { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' },
+        phone: { name: 'phone', label: 'Phone', type: 'text', placeholder: 'Enter Phone' }
       },
       async authorize(credentials) {
         try {
           const user = await axios.post('/register', {
             firstname: credentials?.firstname,
             lastname: credentials?.lastname,
-            company: credentials?.company,
-            password: credentials?.password,
+            username: credentials?.username,
             email: credentials?.email,
-            role: 1,
-            username: credentials?.email,
-            phone: '1282382380'
+            password: credentials?.password,
+            phone: credentials?.phone,
+            role: 1
           });
 
           console.dir(user);

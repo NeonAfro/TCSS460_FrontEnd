@@ -65,29 +65,35 @@ export default function AuthRegister({ providers, csrfToken }: any) {
         initialValues={{
           firstname: '',
           lastname: '',
+          username: '',
           email: '',
-          company: '',
           password: '',
+          phone: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
           firstname: Yup.string().max(255).required('First Name is required'),
           lastname: Yup.string().max(255).required('Last Name is required'),
+          username: Yup.string().max(255).required('User Name is required'),
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string()
             .required('Password is required')
             .test('no-leading-trailing-whitespace', 'Password cannot start or end with spaces', (value) => value === value.trim())
-            .max(10, 'Password must be less than 10 characters')
+            .min(8, 'Password must be at least 7 characters')
+            .max(10, 'Password must be less than 10 characters'),
+          phone: Yup.string().max(12).required('Phone Number is required')
         })}
         onSubmit={async (values, { setErrors, setSubmitting }) => {
           const trimmedEmail = values.email.trim();
+          const trimmedPhone = values.phone.trim().replaceAll('-', ''); // Remove hyphen from phone number
           signIn('register', {
             redirect: false,
             firstname: values.firstname,
             lastname: values.lastname,
+            username: values.username,
             email: trimmedEmail,
+            phone: trimmedPhone,
             password: values.password,
-            company: values.company,
             callbackUrl: APP_DEFAULT_PATH
           }).then((res: any) => {
             if (res?.error) {
@@ -146,22 +152,22 @@ export default function AuthRegister({ providers, csrfToken }: any) {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="company-signup">Company</InputLabel>
+                  <InputLabel htmlFor="username-signup">User Name*</InputLabel>
                   <OutlinedInput
                     fullWidth
-                    error={Boolean(touched.company && errors.company)}
-                    id="company-signup"
-                    value={values.company}
-                    name="company"
+                    error={Boolean(touched.username && errors.username)}
+                    id="username-signup"
+                    value={values.username}
+                    name="username"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter your company name"
+                    placeholder="Enter your User Name"
                     inputProps={{}}
                   />
                 </Stack>
-                {touched.company && errors.company && (
-                  <FormHelperText error id="helper-text-company-signup">
-                    {errors.company}
+                {touched.username && errors.username && (
+                  <FormHelperText error id="helper-text-username-signup">
+                    {errors.username}
                   </FormHelperText>
                 )}
               </Grid>
@@ -189,7 +195,29 @@ export default function AuthRegister({ providers, csrfToken }: any) {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="password-signup">Password</InputLabel>
+                  <InputLabel htmlFor="phone-signup">Phone Number*</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.phone && errors.phone)}
+                    id="phone-login"
+                    type="phone"
+                    value={values.phone}
+                    name="phone"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Enter Phone Number"
+                    inputProps={{}}
+                  />
+                </Stack>
+                {touched.phone && errors.phone && (
+                  <FormHelperText error id="helper-text-phone-signup">
+                    {errors.phone}
+                  </FormHelperText>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="password-signup">Password*</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
@@ -236,7 +264,6 @@ export default function AuthRegister({ providers, csrfToken }: any) {
                   </Grid>
                 </FormControl>
               </Grid>
-
               <Grid item xs={12} sx={{ mt: -1 }}>
                 <Typography variant="body2">
                   By Signing up, you agree to our &nbsp;

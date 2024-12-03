@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from 'utils/axios';
 import Book, { IBook } from './Book';
 
-import Range from '@mui/material/Pagination';
+import PageRange from '@mui/material/Pagination';
 
 const styles = {
   container: {
@@ -42,7 +42,7 @@ export default function Pagination() {
     return (
         <>
           {data && format(data)}
-          <Range count={10} color="primary" />
+          <PageRange count={10} color="primary" />
         </>
     );
 }

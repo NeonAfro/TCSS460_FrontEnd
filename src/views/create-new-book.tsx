@@ -68,7 +68,7 @@ export default function RightDrawer() {
           onClick={() => setIsOpen(!isOpen)}
           sx={{ borderRadius: '0 4px 4px 0' }}
         >
-          {isOpen ? 'Close' : 'Open'} Drawer
+          {isOpen ? 'Close' : 'New Book'} 
         </Button>
       </Box>
 

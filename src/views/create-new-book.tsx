@@ -1,17 +1,33 @@
 'use client';
 
-import HoverRating from 'components/Rating';
 import React, { useState } from 'react';
+import HoverRating from 'components/Rating';
 import { Box, Button, Drawer, Typography, TextField } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import axios from 'utils/axios';
 
+// Define the Ratings class
+class Ratings {
+  constructor(
+    public rating_avg: number,
+    public rating_count: number,
+    public rating_1_star: number,
+    public rating_2_star: number,
+    public rating_3_star: number,
+    public rating_4_star: number,
+    public rating_5_star: number
+  ) {}
+}
+
 export default function RightDrawer() {
   const [isOpen, setIsOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState(''); // State for feedback message
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [ratings, setRatings] = useState<Ratings>(
+    new Ratings(0, 0, 0, 0, 0, 0, 0) // Initialize ratings
+  );
 
-  // Validation Schema for Formik
+  // Validation schema for Formik
   const validationSchema = Yup.object({
     isbn13: Yup.string().required('ISBN-13 is required'),
     authors: Yup.string().required('Authors are required'),
@@ -24,10 +40,29 @@ export default function RightDrawer() {
     image_small_url: Yup.string().url('Must be a valid URL'),
   });
 
+  // Update the ratings state when a user selects a rating
+  const handleRatingChange = (selectedRating: number) => {
+    const newRatings = new Ratings(0, 1, 0, 0, 0, 0, 0); // Reset all counts to 0
+    newRatings[`rating_${selectedRating}_star` as keyof Ratings] = 1; // Set the selected rating to 1
+    newRatings.rating_avg = selectedRating; // Update average rating
+    setRatings(newRatings); // Update state
+  };
+
   const handleClick = async (values: any, { resetForm }: any) => {
     try {
-      // Axios POST request
-      const response = await axios.post('/c/books/book', values);
+      // Include ratings in the payload
+      const payload = {
+        ...values,
+        rating_avg: ratings.rating_avg,
+        rating_count: ratings.rating_count,
+        rating_1_star: ratings.rating_1_star,
+        rating_2_star: ratings.rating_2_star,
+        rating_3_star: ratings.rating_3_star,
+        rating_4_star: ratings.rating_4_star,
+        rating_5_star: ratings.rating_5_star,
+      };
+
+      const response = await axios.post('/c/books/book', payload);
       console.log('Success:', response.data);
 
       // Show success message
@@ -36,8 +71,8 @@ export default function RightDrawer() {
       // Close the drawer and reset the form after a short delay
       setTimeout(() => {
         setIsOpen(false);
-        setFeedbackMessage(''); // Clear message
-        resetForm(); // Reset form values
+        setFeedbackMessage('');
+        resetForm();
       }, 2000);
     } catch (error) {
       console.error('Error:', error);
@@ -46,7 +81,7 @@ export default function RightDrawer() {
       setFeedbackMessage('Invalid input. Please check the form and try again.');
 
       // Keep the drawer open for user corrections
-      setTimeout(() => setFeedbackMessage(''), 3000); // Clear message after delay
+      setTimeout(() => setFeedbackMessage(''), 3000);
     }
   };
 
@@ -56,7 +91,7 @@ export default function RightDrawer() {
       <Box
         sx={{
           position: 'fixed',
-          right: isOpen ? 300 : 16, // Adjust based on drawer state
+          right: isOpen ? 300 : 16,
           top: '50%',
           transform: 'translateY(-50%)',
           transition: 'right 225ms ease',
@@ -68,7 +103,11 @@ export default function RightDrawer() {
           onClick={() => setIsOpen(!isOpen)}
           sx={{ borderRadius: '0 4px 4px 0' }}
         >
+<<<<<<< HEAD
           {isOpen ? 'Close' : 'New Book'} 
+=======
+          {isOpen ? 'Close' : 'New Book'}
+>>>>>>> mothersBasement
         </Button>
       </Box>
 
@@ -80,7 +119,7 @@ export default function RightDrawer() {
         transitionDuration={225}
         sx={{
           '& .MuiDrawer-paper': {
-            width: 400, // Drawer width
+            width: 400,
             padding: 2,
           },
         }}
@@ -90,7 +129,7 @@ export default function RightDrawer() {
           <Typography variant="h6" gutterBottom>
             Add New Book
           </Typography>
-          <HoverRating />
+          <HoverRating onRatingChange={handleRatingChange} />
           <Formik
             initialValues={{
               isbn13: '',
@@ -102,7 +141,7 @@ export default function RightDrawer() {
               image_small_url: '',
             }}
             validationSchema={validationSchema}
-            onSubmit={handleClick} // Pass handleClick as the submit handler
+            onSubmit={handleClick}
           >
             {({ errors, touched }) => (
               <Form>
@@ -205,203 +244,3 @@ export default function RightDrawer() {
     </>
   );
 }
-
-
-// 'use client';
-
-// import React, { useState } from 'react';
-// import { Box, Button, Drawer, Typography } from '@mui/material';
-
-// export default function RightDrawer() {
-//   const [isOpen, setIsOpen] = useState(false);
-
-//   // Animation duration (matches Material-UI's default)
-//   const animationDuration = 225; // in milliseconds
-
-//   return (
-//     <>
-//       {/* Button to toggle the drawer */}
-//       <Box
-//         sx={{
-//           position: 'fixed',
-//           right: isOpen ? 300 : 16, // Adjust based on drawer state
-//           top: '50%',
-//           transform: 'translateY(-50%)',
-//           transition: `right ${animationDuration}ms ease`, // Match Drawer duration
-//           zIndex: 1200, // Ensure it stays above other elements
-//         }}
-//       >
-//         <Button
-//           variant="contained"
-//           onClick={() => setIsOpen(!isOpen)}
-//           sx={{
-//             borderRadius: '0 4px 4px 0', // Rounded left corner
-//           }}
-//         >
-//           {isOpen ? 'Close' : 'Open'} Drawer
-//         </Button>
-//       </Box>
-
-//       {/* Drawer Component */}
-//       <Drawer
-//         anchor="right"
-//         open={isOpen}
-//         onClose={() => setIsOpen(false)}
-//         transitionDuration={animationDuration} // Match button animation duration
-//         sx={{
-//           '& .MuiDrawer-paper': {
-//             width: 300, // Drawer width
-//             padding: 2,
-//           },
-//         }}
-//       >
-//         {/* Drawer Content */}
-//         <Box>
-//           <Typography variant="h6" gutterBottom>
-//             Drawer Content
-//           </Typography>
-//           <Button variant="outlined" onClick={() => setIsOpen(false)}>
-//             Close Drawer
-//           </Button>
-//         </Box>
-//       </Drawer>
-//     </>
-//   );
-// }
-
-
-
-// 'use client';
-
-// import React, { useState } from 'react';
-// import { Box, Button, Drawer, Typography } from '@mui/material';
-
-// export default function RightDrawer() {
-//   const [isOpen, setIsOpen] = useState(false);
-
-//   return (
-//     <>
-//       {/* Button to toggle the drawer */}
-//       <Button
-//         variant="contained"
-//         onClick={() => setIsOpen(true)}
-//         sx={{
-//           position: 'fixed',
-//           right: 16,
-//           top: '50%',
-//           transform: 'translateY(-50%)',
-//           zIndex: 1200,
-//         }}
-//       >
-//         Open Drawer
-//       </Button>
-
-//       {/* Drawer Component */}
-//       <Drawer
-//         anchor="right" // Pull out from the right
-//         open={isOpen}
-//         onClose={() => setIsOpen(false)}
-//         sx={{
-//           '& .MuiDrawer-paper': {
-//             width: 300, // Set drawer width
-//             padding: 2,
-//           },
-//         }}
-//       >
-//         {/* Drawer Content */}
-//         <Box>
-//           <Typography variant="h6" gutterBottom>
-//             Drawer Content
-//           </Typography>
-//         </Box>
-//       </Drawer>
-//     </>
-//   );
-// }
-
-
-
-// 'use client';
-
-// import React, { useState } from 'react';
-// import { Box, Button, Drawer, Typography } from '@mui/material';
-
-// export default function BarebonesDrawer() {
-//   const [isOpen, setIsOpen] = useState(false);
-
-//   return (
-//     <>
-//       {/* Drawer and Button */}
-//       <Drawer
-//         anchor="right"
-//         open={isOpen}
-//         onClose={() => setIsOpen(false)}
-//         sx={{
-//           '& .MuiDrawer-paper': {
-//             display: 'flex',
-//             alignItems: 'flex-start',
-//             justifyContent: 'space-between',
-//             flexDirection: 'column',
-//             width: 300, // Adjust the width as needed
-//             position: 'relative',
-//           },
-//         }}
-//       >
-//         {/* Drawer Content */}
-//         <Box sx={{ width: '100%', padding: 2 }}>
-//           <Typography variant="h6" gutterBottom>
-//             Drawer Content
-//           </Typography>
-//           <Button onClick={() => setIsOpen(false)}>Close</Button>
-//         </Box>
-//       </Drawer>
-
-//       {/* Persistent Button on the Right */}
-//       <Box
-//         sx={{
-//           position: 'fixed',
-//           right: isOpen ? 300 : 0, // Adjust position based on drawer state
-//           top: '50%',
-//           transform: 'translateY(-50%)',
-//           transition: 'right 0.3s ease', // Smooth transition
-//           zIndex: 1300, // Ensure it stays above other elements
-//         }}
-//       >
-//         <Button
-//           variant="contained"
-//           onClick={() => setIsOpen(true)}
-//           sx={{
-//             borderRadius: '0 4px 4px 0',
-//           }}
-//         >
-//           Open Drawer
-//         </Button>
-//       </Box>
-//     </>
-//   );
-// }
-
-
-// import React, { useState } from 'react';
-// import { Box, Button, Drawer, Typography } from '@mui/material';
-
-// export default function BarebonesDrawer() {
-//   const [isOpen, setIsOpen] = useState(false);
-
-//   return (
-//     <div>
-//       {/* Button to open the drawer */}
-//       <Button variant="contained" onClick={() => setIsOpen(true)}>
-//         Open Drawer
-//       </Button>
-
-//       {/* Drawer Component */}
-//       <Drawer anchor="right" open={isOpen} onClose={() => setIsOpen(false)}>
-//         <Box sx={{ width: 250, padding: 2 }}>
-//           <Typography variant="h6">Drawer Content</Typography>
-//           <Button onClick={() => setIsOpen(false)}>Close</Button>
-//         </Box>
-//       </Drawer>
-//     </div>
-//   );
-// }

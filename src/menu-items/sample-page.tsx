@@ -4,13 +4,12 @@
 import { FormattedMessage } from 'react-intl';
 
 // assets
-import ChromeOutlined from '@ant-design/icons/ChromeOutlined';
-
+import LibraryBooksTwoToneIcon from '@mui/icons-material/LibraryBooksTwoTone';
 // type
 import { NavItemType } from 'types/menu';
 
 // icons
-const icons = { ChromeOutlined };
+const icons = { LibraryBooksTwoToneIcon };
 
 // ==============================|| MENU ITEMS - SAMPLE PAGE ||============================== //
 
@@ -19,7 +18,7 @@ const samplePage: NavItemType = {
   title: <FormattedMessage id="sample-page" />,
   type: 'group',
   url: '/sample-page',
-  icon: icons.ChromeOutlined
+  icon: icons.LibraryBooksTwoToneIcon
 };
 
 export default samplePage;

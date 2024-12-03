@@ -38,7 +38,7 @@ export default function Pagination() {
         axios.get(`/c/books/all/${page}/${limit}`)
             .then((res) => { return res.data; })
             .then((data) => setData(data));
-    });
+    }, []);
     return (
         <>
           {data && format(data)}

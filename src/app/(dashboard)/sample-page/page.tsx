@@ -7,6 +7,7 @@ import RightDrawer from 'views/create-new-book';
 export default function SampleViewPage() {
   return (
     <>
+      <RightDrawer/>
       <SamplePage />
     </>
   )

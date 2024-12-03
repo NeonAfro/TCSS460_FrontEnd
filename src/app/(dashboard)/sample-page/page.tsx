@@ -8,11 +8,7 @@ import HoverRating from 'components/Rating';
 export default function SampleViewPage() {
   return (
     <>
-<<<<<<< HEAD
-      <RightDrawer/>
-=======
       <RightDrawer />
->>>>>>> mothersBasement
       <SamplePage />
     </>
   )

@@ -103,11 +103,7 @@ export default function RightDrawer() {
           onClick={() => setIsOpen(!isOpen)}
           sx={{ borderRadius: '0 4px 4px 0' }}
         >
-<<<<<<< HEAD
-          {isOpen ? 'Close' : 'New Book'} 
-=======
           {isOpen ? 'Close' : 'New Book'}
->>>>>>> mothersBasement
         </Button>
       </Box>
 

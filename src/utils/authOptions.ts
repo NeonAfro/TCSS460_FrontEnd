@@ -60,6 +60,7 @@ export const authOptions: NextAuthOptions = {
             return user.data.user;
           }
         } catch (e: any) {
+          console.error("Access Token Error HERE");
           console.dir(e);
           const errorMessage = e?.message || e?.response?.data?.message || 'Something went wrong!';
           throw new Error(errorMessage);

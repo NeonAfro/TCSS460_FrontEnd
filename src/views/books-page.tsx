@@ -6,9 +6,9 @@
 import Pagination from 'components/Pagination';
 import NewBookDrawer from 'views/create-new-book';
 
-// ==============================|| SAMPLE PAGE ||============================== //
+// ==============================|| BOOKS PAGE ||============================== //
 
-export default function SamplePage() {
+export default function BooksPage() {
   return (
     <>
       <Pagination />

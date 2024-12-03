@@ -11,14 +11,14 @@ import { NavItemType } from 'types/menu';
 // icons
 const icons = { LibraryBooksTwoToneIcon };
 
-// ==============================|| MENU ITEMS - SAMPLE PAGE ||============================== //
+// ==============================|| MENU ITEMS - BOOKS PAGE ||============================== //
 
-const samplePage: NavItemType = {
-  id: 'sample-page',
-  title: <FormattedMessage id="sample-page" />,
+const booksPage: NavItemType = {
+  id: 'books-page',
+  title: <FormattedMessage id="Books" />,
   type: 'group',
-  url: '/sample-page',
+  url: '/books-page',
   icon: icons.LibraryBooksTwoToneIcon
 };
 
-export default samplePage;
+export default booksPage;

@@ -25,6 +25,7 @@ const pages: NavItemType = {
       type: 'collapse',
       icon: icons.MessageOutlined,
       children: [
+        // holds the children of the messages group; send-message and view-messages
         {
           id: 'send-message',
           title: <FormattedMessage id="send-message" />,

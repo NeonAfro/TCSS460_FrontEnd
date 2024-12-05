@@ -76,7 +76,7 @@ export default function SendMessage({
                     id="sender-name"
                     type="text"
                     value={values.name}
-                    name="name"
+                    name="name" // html browser previous history suggestion boxes
                     onBlur={handleBlur}
                     onChange={handleChange}
                     placeholder="Enter the sender's name"

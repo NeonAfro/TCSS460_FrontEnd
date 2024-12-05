@@ -26,13 +26,25 @@ export default function RightDrawer() {
 
   const handleClick = async (values: any, { resetForm }: any) => {
     try {
-      // Axios POST request
-      const response = await axios.post('/c/books/book', values);
-      console.log('Success:', response.data);
+      // Add default image URLs if not provided
+      const defaultSmallImageUrl =
+        "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";
 
+      const defaultBigImageUrl = "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";  
+
+      const payload = {
+        ...values,
+        image_url: values.image_url || defaultBigImageUrl,
+        image_small_url: values.image_small_url || defaultSmallImageUrl,
+      };
+  
+      // Axios POST request
+      const response = await axios.post('/c/books/book', payload);
+      console.log('Success:', response.data);
+  
       // Show success message
       setFeedbackMessage('Book was successfully created!');
-
+  
       // Close the drawer and reset the form after a short delay
       setTimeout(() => {
         setIsOpen(false);
@@ -41,14 +53,15 @@ export default function RightDrawer() {
       }, 2000);
     } catch (error) {
       console.error('Error:', error);
-
+  
       // Show error message
       setFeedbackMessage('Invalid input. Please check the form and try again.');
-
+  
       // Keep the drawer open for user corrections
       setTimeout(() => setFeedbackMessage(''), 3000); // Clear message after delay
     }
   };
+  
 
   return (
     <>
@@ -68,7 +81,7 @@ export default function RightDrawer() {
           onClick={() => setIsOpen(!isOpen)}
           sx={{ borderRadius: '0 4px 4px 0' }}
         >
-          {isOpen ? 'Close' : 'Open'} Drawer
+          {isOpen ? '' : 'New Book'}
         </Button>
       </Box>
 

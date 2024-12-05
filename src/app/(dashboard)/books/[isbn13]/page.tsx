@@ -1,11 +1,15 @@
-import { useRouter } from 'next/router';
+"use client";
+import { useParams } from 'next/navigation';
+//import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'utils/axios';
 import Book, { IBook } from 'components/Book';
 
 export default function BookPage() {
-  const router = useRouter();
-  const { isbn13 } = router.query;
+  //const router = useRouter();
+  const params = useParams();
+  const isbn13 = params.isbn13;
+
   const [book, setBook] = useState<IBook | null>(null);
 
   useEffect(() => {
@@ -23,7 +27,7 @@ export default function BookPage() {
     }
   }, [isbn13]);
 
-  if (!book) return <div>Loading...</div>;
+  if (!book) return <div>FAILING...</div>;
 
   return <Book book={book} refreshBooks={() => {}} />;
 }

@@ -1,4 +1,5 @@
 "use client";
+import Link from 'next/link';
 
 import { useState, useEffect } from "react";
 import axios from "utils/axios";
@@ -76,7 +77,13 @@ export default function Pagination() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.grid}>{data && data.books.map((book) => <Book key={book.isbn13} book={book} refreshBooks={fetchBooks} />)}</div>
+      <div style={styles.grid}>
+      {data && data.books.map((book) => (
+          <Link key={book.isbn13} href={`/books/${book.isbn13}`} passHref>
+              <Book book={book} refreshBooks={fetchBooks} />
+          </Link>
+        ))}
+      </div>
       <div style={styles.flexContainer}>
         <Range count={maxBooks} color="primary" onChange={handlePageChange} />
         <Box

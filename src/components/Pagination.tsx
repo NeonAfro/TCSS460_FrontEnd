@@ -1,9 +1,8 @@
 "use client";
-import Link from 'next/link';
-
 import { useState, useEffect } from "react";
 import axios from "utils/axios";
-import Book, { IBook } from "./Book";
+import Book from "components/Book";
+import { IBook } from "types/book";
 import Range from "@mui/material/Pagination";
 
 import Box from '@mui/material/Box';
@@ -79,9 +78,7 @@ export default function Pagination() {
     <div style={styles.container}>
       <div style={styles.grid}>
       {data && data.books.map((book) => (
-          <Link key={book.isbn13} href={`/books/${book.isbn13}`} passHref>
-              <Book book={book} refreshBooks={fetchBooks} />
-          </Link>
+            <Book key={book.isbn13} book={book} refreshBooks={fetchBooks} />
         ))}
       </div>
       <div style={styles.flexContainer}>

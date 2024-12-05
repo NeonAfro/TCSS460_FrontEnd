@@ -3,7 +3,7 @@ import { useParams } from 'next/navigation';
 //import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'utils/axios';
-import Book, { IBook } from 'components/Book';
+import { IBook } from 'types/book';
 import BigBook from 'components/BigBook';
 
 export default function BookPage() {
@@ -28,7 +28,7 @@ export default function BookPage() {
     }
   }, [isbn13]);
 
-  if (!book) return <div>FAILING...</div>;
+  if (!book) return <h1>LOADING...</h1>;
 
   return <BigBook book={book} refreshBooks={() => {}} />;
 }

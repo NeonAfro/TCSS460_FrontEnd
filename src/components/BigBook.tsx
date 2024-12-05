@@ -48,7 +48,6 @@ const styles: { [key: string]: React.CSSProperties } = {
       position: "relative",
     },
     image: {
-      cursor: "pointer",
       width: "200px",
       height: "300px",
       objectFit: "cover",

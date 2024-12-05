@@ -1,10 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
-import DeleteIcon from "@mui/icons-material/Delete"; // MUI Trash Can Icon
-import { Box, Typography } from "@mui/material";
-import axios from "utils/axios";
-
 export interface IRatings {
   average: number;
   count: number;
@@ -67,46 +62,13 @@ const styles: { [key: string]: React.CSSProperties } = {
       flexDirection: "column",
       justifyContent: "space-between",
     },
-    deleteIcon: {
-      position: "absolute",
-      top: "5px",
-      right: "5px",
-      cursor: "pointer",
-      color: "#ff5252",
-    },
-    feedback: {
-      position: "fixed",
-      bottom: "16px",
-      left: "50%",
-      transform: "translateX(-50%)",
-      padding: "8px 16px",
-      borderRadius: "4px",
-      zIndex: 1300,
-      color: "white",
-    },
   };
   
   export default function BigBook({
     book,
     refreshBooks,
   }: BookProps & { refreshBooks: () => void }) {
-    const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-    const [feedbackColor, setFeedbackColor] = useState<string>("");
   
-    const handleDelete = async () => {
-      try {
-        await axios.delete(`/c/books/isbn/${book.isbn13}`);
-        setFeedbackMessage("Book deleted successfully!");
-        setFeedbackColor("green");
-        setTimeout(() => setFeedbackMessage(null), 3000); // Clear feedback after 3 seconds
-        refreshBooks(); // Refresh the book list
-      } catch (error) {
-        console.error("Error deleting book:", error);
-        setFeedbackMessage("Failed to delete the book.");
-        setFeedbackColor("red");
-        setTimeout(() => setFeedbackMessage(null), 3000); // Clear feedback after 3 seconds
-      }
-    };
   
     return (
       <>
@@ -116,7 +78,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   
           {/* Book Details */}
           <div style={styles.details}>
-            <DeleteIcon style={styles.deleteIcon} onClick={handleDelete} />
             <h2>{book.title}</h2>
             <p>
               <strong>ISBN-13:</strong> {book.isbn13}
@@ -132,18 +93,6 @@ const styles: { [key: string]: React.CSSProperties } = {
             </p>
           </div>
         </div>
-  
-        {/* Feedback Message */}
-        {feedbackMessage && (
-          <Box
-            sx={{
-              ...styles.feedback,
-              backgroundColor: feedbackColor,
-            }}
-          >
-            <Typography>{feedbackMessage}</Typography>
-          </Box>
-        )}
       </>
     );
   }

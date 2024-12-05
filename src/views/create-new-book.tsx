@@ -50,24 +50,25 @@ export default function RightDrawer() {
 
   const handleClick = async (values: any, { resetForm }: any) => {
     try {
-      // Include ratings in the payload
+      // Add default image URLs if not provided
+      const defaultSmallImageUrl =
+        "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";
+
+      const defaultBigImageUrl = "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";  
+
       const payload = {
         ...values,
-        rating_avg: ratings.rating_avg,
-        rating_count: ratings.rating_count,
-        rating_1_star: ratings.rating_1_star,
-        rating_2_star: ratings.rating_2_star,
-        rating_3_star: ratings.rating_3_star,
-        rating_4_star: ratings.rating_4_star,
-        rating_5_star: ratings.rating_5_star,
+        image_url: values.image_url || defaultBigImageUrl,
+        image_small_url: values.image_small_url || defaultSmallImageUrl,
       };
-
+  
+      // Axios POST request
       const response = await axios.post('/c/books/book', payload);
       console.log('Success:', response.data);
-
+  
       // Show success message
       setFeedbackMessage('Book was successfully created!');
-
+  
       // Close the drawer and reset the form after a short delay
       setTimeout(() => {
         setIsOpen(false);
@@ -76,14 +77,15 @@ export default function RightDrawer() {
       }, 2000);
     } catch (error) {
       console.error('Error:', error);
-
+  
       // Show error message
       setFeedbackMessage('Invalid input. Please check the form and try again.');
-
+  
       // Keep the drawer open for user corrections
       setTimeout(() => setFeedbackMessage(''), 3000);
     }
   };
+  
 
   return (
     <>
@@ -103,7 +105,7 @@ export default function RightDrawer() {
           onClick={() => setIsOpen(!isOpen)}
           sx={{ borderRadius: '0 4px 4px 0' }}
         >
-          {isOpen ? 'Close' : 'New Book'}
+          {isOpen ? '' : 'New Book'}
         </Button>
       </Box>
 

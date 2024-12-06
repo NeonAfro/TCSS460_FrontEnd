@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete'; // MUI Trash Can Icon
+import Rating from '@mui/material/Rating'; // MUI Rating Component
 import { Box, Typography } from '@mui/material';
 import axios from 'utils/axios';
 import Link from 'next/link';
@@ -86,6 +87,10 @@ export default function Book({ book, refreshBooks }: BookProps & { refreshBooks:
         {/* Book Details */}
         <div style={styles.details}>
           <DeleteIcon style={styles.deleteIcon} onClick={handleDelete} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Rating name="half-rating-read" defaultValue={book.ratings.average} precision={0.1} readOnly />
+            <p>{book.ratings.average}</p>
+            </div>
           <h2>{book.title}</h2>
           <p>
             <strong>ISBN-13:</strong> {book.isbn13}

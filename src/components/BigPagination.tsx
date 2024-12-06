@@ -12,20 +12,20 @@ const styles = {
     padding: '20px',
     width: '100%',
     maxWidth: '1400px',
-    margin: '0 auto'
+    margin: '0 auto',
   },
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
     gap: '20px',
-    padding: '20px'
+    padding: '20px',
   },
   flexContainer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: '20px'
-  }
+    marginTop: '20px',
+  },
 };
 
 interface PaginationProps {
@@ -36,9 +36,19 @@ interface PaginationProps {
   pageChange: (event: React.ChangeEvent<unknown>, value: number) => void;
   limitChange: (event: React.KeyboardEvent<HTMLDivElement>) => void;
   fetchBooks: () => void;
+  setPage?: (value: number) => void; // Make setPage optional
 }
 
-export default function Pagination({ data, page, limit, maxBooks, pageChange, limitChange, fetchBooks }: PaginationProps) {
+export default function Pagination({
+  data,
+  page,
+  limit,
+  maxBooks,
+  pageChange,
+  limitChange,
+  fetchBooks,
+  setPage, // Add setPage as an optional prop
+}: PaginationProps) {
   if (!data) {
     return (
       <>
@@ -48,10 +58,15 @@ export default function Pagination({ data, page, limit, maxBooks, pageChange, li
     );
   }
 
+  // Adjust the page if it exceeds the new maxBooks
+  if (setPage && page > maxBooks) {
+    setPage(maxBooks > 0 ? maxBooks : 1); // Ensure page is within bounds
+  }
+
   return (
     <div style={styles.container}>
       <div style={styles.grid}>
-        {data[page - 1].map((book) => (
+        {data[page - 1]?.map((book) => (
           <Book key={book.isbn13} book={book} refreshBooks={fetchBooks} />
         ))}
       </div>
@@ -64,9 +79,16 @@ export default function Pagination({ data, page, limit, maxBooks, pageChange, li
           autoComplete="off"
           onSubmit={(event) => event.preventDefault()}
         >
-          <TextField label="Limit" id="filled-size-small" defaultValue={limit} variant="filled" size="small" onKeyDown={limitChange} />
+          <TextField
+            label="Limit"
+            id="filled-size-small"
+            defaultValue={limit}
+            variant="filled"
+            size="small"
+            onKeyDown={limitChange}
+          />
         </Box>
       </div>
     </div>
   );
-};
+}

@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import { IBook } from 'types/book';
 import BigPagination from 'components/BigPagination';
 
+
 // Custom Tooltip
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)(
   ({ theme }) => ({
@@ -158,6 +159,7 @@ export default function SearchBar() {
           pageChange={handlePageChange}
           limitChange={handleLimitChange}
           fetchBooks={fetchBooks}
+          setPage={setPage}
         />
       ) : searchQuery.trim() ? (
         <Typography>No results found for "{searchQuery}"</Typography>

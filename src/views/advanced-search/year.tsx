@@ -87,6 +87,7 @@ export default function SearchBar() {
       const lim = Number((event.target as HTMLInputElement).value);
       setLimit(lim);
       setMaxBooks(Math.round(bookCount / lim));
+      handleSearch(searchQuery);
     }
   };
 

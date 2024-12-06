@@ -3,6 +3,7 @@ import Rating from '@mui/material/Rating'; // MUI Rating Component
 import { Typography, Button } from '@mui/material';
 import axios from 'utils/axios';
 import { BookProps } from 'types/book';
+import { round } from 'lodash';
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
@@ -52,11 +53,11 @@ export default function BigBook({ book }: BookProps) {
 
     // Prepare new rating counts
     const ratingCounts = {
-      oneStar: book.ratings.rating_1 + (newRating === 1 ? 1 : 0),
-      twoStar: book.ratings.rating_2 + (newRating === 2 ? 1 : 0),
-      threeStar: book.ratings.rating_3 + (newRating === 3 ? 1 : 0),
-      fourStar: book.ratings.rating_4 + (newRating === 4 ? 1 : 0),
-      fiveStar: book.ratings.rating_5 + (newRating === 5 ? 1 : 0),
+      oneStar: (newRating === 1 ? 1 : 0),
+      twoStar: (newRating === 2 ? 1 : 0),
+      threeStar: (newRating === 3 ? 1 : 0),
+      fourStar: (newRating === 4 ? 1 : 0),
+      fiveStar: (newRating === 5 ? 1 : 0),
     };
 
     try {
@@ -87,7 +88,7 @@ export default function BigBook({ book }: BookProps) {
               precision={0.1}
               readOnly
             />
-            <p>{book.ratings.average}</p>
+            <p>{Math.round(book.ratings.average * 10) /10}</p>
           </div>
           {/* Title */}
           <Typography variant="h3" gutterBottom>

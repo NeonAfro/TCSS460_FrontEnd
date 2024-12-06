@@ -18,28 +18,28 @@ const styles = {
     padding: '20px',
     width: '100%',
     maxWidth: '1400px',
-    margin: '0 auto',
+    margin: '0 auto'
   },
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
     gap: '20px',
-    padding: '20px',
-  },
+    padding: '20px'
+  }
 };
 
 // Custom Tooltip
-const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: '#f5f5f9',
-    color: 'rgba(0, 0, 0, 0.87)',
-    maxWidth: 220,
-    fontSize: theme.typography.pxToRem(12),
-    border: '1px solid #dadde9',
-  },
-}));
+const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)(
+  ({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: '#f5f5f9',
+      color: 'rgba(0, 0, 0, 0.87)',
+      maxWidth: 220,
+      fontSize: theme.typography.pxToRem(12),
+      border: '1px solid #dadde9'
+    }
+  })
+);
 
 // Search Input Styling
 const Search = styled('div')(({ theme }) => ({
@@ -47,15 +47,15 @@ const Search = styled('div')(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
   '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
+    backgroundColor: alpha(theme.palette.common.white, 0.25)
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
   width: '100%',
   [theme.breakpoints.up('sm')]: {
     marginLeft: theme.spacing(3),
-    width: 'auto',
-  },
+    width: 'auto'
+  }
 }));
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
@@ -65,7 +65,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   pointerEvents: 'none',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'center'
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -76,9 +76,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
+      width: '20ch'
+    }
+  }
 }));
 
 // SearchBar Component
@@ -137,9 +137,7 @@ export default function SearchBar() {
       {/* Search Results */}
       <div style={styles.grid}>
         {searchResults.length > 0 ? (
-          searchResults.map((book) => (
-            <Book key={book.isbn13} book={book} refreshBooks={() => {}} />
-          ))
+          searchResults.map((book) => <Book key={book.isbn13} book={book} refreshBooks={() => {}} />)
         ) : searchQuery.trim() ? (
           <Typography>No results found for "{searchQuery}"</Typography>
         ) : null}
@@ -147,4 +145,3 @@ export default function SearchBar() {
     </Box>
   );
 }
-

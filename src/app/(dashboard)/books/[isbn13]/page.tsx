@@ -17,7 +17,6 @@ export default function BookPage() {
     if (isbn13) {
       const fetchBook = async () => {
         try {
-          console.log(isbn13);
           const response = await axios.get(`/c/books/isbn/${isbn13}`);
           setBook(response.data.book);
         } catch (error) {
@@ -30,5 +29,5 @@ export default function BookPage() {
 
   if (!book) return <h1>LOADING...</h1>;
 
-  return <BigBook book={book} refreshBooks={() => {}} />;
+  return <BigBook book={book} />;
 }

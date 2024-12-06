@@ -1,10 +1,7 @@
-'use client';
 
-import React, { useState } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete'; // MUI Trash Can Icon
-import { Box, Typography } from '@mui/material';
+import Rating from '@mui/material/Rating'; // MUI Rating Component
+import { Typography } from '@mui/material';
 import { BookProps } from 'types/book';
-import axios from 'utils/axios';
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
@@ -54,24 +51,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   }
 };
 
-export default function BigBook({ book, refreshBooks }: BookProps & { refreshBooks: () => void }) {
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-  const [feedbackColor, setFeedbackColor] = useState<string>('');
-
-  const handleDelete = async () => {
-    try {
-      await axios.delete(`/c/books/isbn/${book.isbn13}`);
-      setFeedbackMessage('Book deleted successfully!');
-      setFeedbackColor('green');
-      setTimeout(() => setFeedbackMessage(null), 3000); // Clear feedback after 3 seconds
-      refreshBooks(); // Refresh the book list
-    } catch (error) {
-      console.error('Error deleting book:', error);
-      setFeedbackMessage('Failed to delete the book.');
-      setFeedbackColor('red');
-      setTimeout(() => setFeedbackMessage(null), 3000); // Clear feedback after 3 seconds
-    }
-  };
+export default function BigBook({ book }: BookProps) {
 
   return (
     <>
@@ -81,8 +61,10 @@ export default function BigBook({ book, refreshBooks }: BookProps & { refreshBoo
 
         {/* Book Details */}
         <div style={styles.details}>
-          <DeleteIcon style={styles.deleteIcon} onClick={handleDelete} />
-
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Rating name="half-rating-read" defaultValue={book.ratings.average} precision={0.1} readOnly />
+            <p>{book.ratings.average}</p>
+          </div>
           {/* Title */}
           <Typography variant="h3" gutterBottom>
             {book.title}
@@ -103,18 +85,6 @@ export default function BigBook({ book, refreshBooks }: BookProps & { refreshBoo
           </Typography>
         </div>
       </div>
-
-      {/* Feedback Message */}
-      {feedbackMessage && (
-        <Box
-          sx={{
-            ...styles.feedback,
-            backgroundColor: feedbackColor,
-          }}
-        >
-          <Typography>{feedbackMessage}</Typography>
-        </Box>
-      )}
     </>
   );
 }

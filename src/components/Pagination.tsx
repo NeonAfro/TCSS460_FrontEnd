@@ -73,7 +73,7 @@ export default function Pagination() {
       fetchBooks();
     }, [page, limit]);
 
-
+  if (!data) return <h1>LOADING...</h1>;
   return (
     <div style={styles.container}>
       <div style={styles.grid}>

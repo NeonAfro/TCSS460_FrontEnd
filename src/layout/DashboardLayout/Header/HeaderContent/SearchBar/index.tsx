@@ -58,7 +58,7 @@ export default function SearchBar() {
         setSearchResults([]); // Clear results when query is empty
         return;
       }
-
+      query = query[0].toUpperCase() + query.slice(1); // Capitalize the first letter
       try {
         const response = await axios.get(`/c/books/original_title/${query}`);
         setSearchResults(response.data.books || []); // Assuming the response contains `books`

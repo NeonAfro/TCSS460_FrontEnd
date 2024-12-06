@@ -79,7 +79,7 @@ export default function AuthRegister({ providers, csrfToken }: any) {
           password: Yup.string()
             .required('Password is required')
             .test('no-leading-trailing-whitespace', 'Password cannot start or end with spaces', (value) => value === value.trim())
-            .min(8, 'Password must be at least 7 characters')
+            .min(7, 'Password must be at least 7 characters')
             .max(10, 'Password must be less than 10 characters'),
           phone: Yup.string().max(12).required('Phone Number is required')
         })}

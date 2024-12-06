@@ -31,6 +31,7 @@ import { StringColorProps } from 'types/password';
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
+import { Box, FormControl, Typography } from '@mui/material';
 
 export default function AuthResetPassword() {
   const [level, setLevel] = useState<StringColorProps>();
@@ -75,6 +76,16 @@ export default function AuthResetPassword() {
             'New password cannot be the same as the old password',
             function (value) {
               return value !== this.parent.oldPassword;
+            }
+          )
+          .min(7, 'Password must be at least 7 characters')
+          .test(
+            'contains-special-character-and-number',
+            'Password must contain at least one special character and one number',
+            (value) => {
+              const hasSpecialCharacter = /[!@#$%^&*(),.?":{}|<>]/.test(value || '');
+              const hasNumber = /[0-9]/.test(value || '');
+              return hasSpecialCharacter && hasNumber;
             }
           ),
         confirmPassword: Yup.string()
@@ -148,10 +159,7 @@ export default function AuthResetPassword() {
                   value={values.oldPassword}
                   name="oldPassword"
                   onBlur={handleBlur}
-                  onChange={(e) => {
-                    handleChange(e);
-                    changePassword(e.target.value);
-                  }}
+                  onChange={ handleChange }
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
@@ -210,6 +218,18 @@ export default function AuthResetPassword() {
                   {errors.newPassword}
                 </FormHelperText>
               )}
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item>
+                    <Box sx={{ bgcolor: level?.color, width: 85, height: 8, borderRadius: '7px' }} />
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="subtitle1" fontSize="0.75rem">
+                      {level?.label}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>

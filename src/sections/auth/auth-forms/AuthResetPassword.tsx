@@ -84,7 +84,7 @@ export default function AuthResetPassword() {
       })}
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
-          const response = await axios.put('/api/auth/change_password', {
+          const response = await axios.post('/change_password', {
             email: values.email,
             oldPassword: values.oldPassword,
             newPassword: values.newPassword

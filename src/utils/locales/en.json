@@ -7,11 +7,11 @@
   "error-500": "Error 500",
   "full-page": "Full Page Example",
   "maintenance": "Maintenance",
-  "messages": "Messages",
+  "advanced-search": "advanced search",
   "others": "Others",
   "pages": "Pages",
   "books-page": "Books Page",
-  "send-message": "Send Message",
+  "author": "author",
   "under-construction": "Under Construction",
-  "view-messages": "View Messages"
+  "year": "year"
 }

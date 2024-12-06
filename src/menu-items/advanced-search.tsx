@@ -3,8 +3,8 @@ import { FormattedMessage } from 'react-intl';
 
 // assets
 import ManageSearchTwoToneIcon from '@mui/icons-material/ManageSearchTwoTone';
-import PersonSearchTwoToneIcon from '@mui/icons-material/PersonSearchTwoTone';
-import QueryStatsTwoToneIcon from '@mui/icons-material/QueryStatsTwoTone';
+import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
+import { LuCalendarSearch } from 'react-icons/lu';
 
 // type
 import { NavItemType } from 'types/menu';
@@ -26,14 +26,14 @@ const pages: NavItemType = {
           title: <FormattedMessage id="Author" />,
           type: 'item',
           url: '/advanced-search/author',
-          icon: PersonSearchTwoToneIcon
+          icon: PersonSearchOutlinedIcon
         },
         {
           id: 'year',
           title: <FormattedMessage id="Year" />,
           type: 'item',
           url: '/advanced-search/year',
-          icon: QueryStatsTwoToneIcon
+          icon: LuCalendarSearch
         }
       ]
     }

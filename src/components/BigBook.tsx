@@ -1,6 +1,7 @@
-
+import React, { useState } from 'react';
 import Rating from '@mui/material/Rating'; // MUI Rating Component
-import { Typography } from '@mui/material';
+import { Typography, Button } from '@mui/material';
+import axios from 'utils/axios';
 import { BookProps } from 'types/book';
 
 const styles: { [key: string]: React.CSSProperties } = {
@@ -8,14 +9,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: '20px', 
+    gap: '20px',
     position: 'relative',
     padding: '20px',
     backgroundColor: '#ffffff',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
     borderRadius: '8px',
     maxWidth: '90%',
-    margin: '20px auto', 
+    margin: '20px auto',
   },
   image: {
     width: '100%',
@@ -30,28 +31,46 @@ const styles: { [key: string]: React.CSSProperties } = {
     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
     display: 'flex',
     flexDirection: 'column',
-    gap: '10px', 
-  },
-  deleteIcon: {
-    position: 'absolute',
-    top: '5px',
-    right: '5px',
-    cursor: 'pointer',
-    color: '#ff5252'
+    gap: '10px',
   },
   feedback: {
-    position: 'fixed',
-    bottom: '16px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    padding: '8px 16px',
-    borderRadius: '4px',
-    zIndex: 1300,
-    color: 'white'
-  }
+    marginTop: '10px',
+    color: 'green',
+    fontSize: '0.9rem',
+  },
 };
 
 export default function BigBook({ book }: BookProps) {
+  const [newRating, setNewRating] = useState<number | null>(0); // State for new rating
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null); // Feedback message
+
+  const handleRatingSubmit = async () => {
+    if (!newRating) {
+      setFeedbackMessage('Please select a rating before submitting.');
+      return;
+    }
+
+    // Prepare new rating counts
+    const ratingCounts = {
+      oneStar: book.ratings.rating_1 + (newRating === 1 ? 1 : 0),
+      twoStar: book.ratings.rating_2 + (newRating === 2 ? 1 : 0),
+      threeStar: book.ratings.rating_3 + (newRating === 3 ? 1 : 0),
+      fourStar: book.ratings.rating_4 + (newRating === 4 ? 1 : 0),
+      fiveStar: book.ratings.rating_5 + (newRating === 5 ? 1 : 0),
+    };
+
+    try {
+      // Send PUT request with new ratings
+      await axios.put(
+        `c/books/ratings/${book.isbn13}/${ratingCounts.oneStar}/${ratingCounts.twoStar}/${ratingCounts.threeStar}/${ratingCounts.fourStar}/${ratingCounts.fiveStar}`
+      );
+
+      setFeedbackMessage('Your rating has been submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      setFeedbackMessage('Failed to submit your rating. Please try again.');
+    }
+  };
 
   return (
     <>
@@ -62,7 +81,12 @@ export default function BigBook({ book }: BookProps) {
         {/* Book Details */}
         <div style={styles.details}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Rating name="half-rating-read" defaultValue={book.ratings.average} precision={0.1} readOnly />
+            <Rating
+              name="half-rating-read"
+              defaultValue={book.ratings.average}
+              precision={0.1}
+              readOnly
+            />
             <p>{book.ratings.average}</p>
           </div>
           {/* Title */}
@@ -83,8 +107,33 @@ export default function BigBook({ book }: BookProps) {
           <Typography variant="h6">
             <strong>Original Title:</strong> {book.original_title}
           </Typography>
+
+          {/* New Rating Section */}
+          <div style={{ marginTop: '20px' }}>
+            <Typography variant="h6" gutterBottom>
+              Add Your Rating:
+            </Typography>
+            <Rating
+              name="user-rating"
+              value={newRating}
+              onChange={(event, newValue) => setNewRating(newValue)}
+              precision={1}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginTop: '10px' }}
+              onClick={handleRatingSubmit}
+            >
+              Submit Rating
+            </Button>
+            {feedbackMessage && (
+              <Typography style={styles.feedback}>{feedbackMessage}</Typography>
+            )}
+          </div>
         </div>
       </div>
     </>
   );
 }
+

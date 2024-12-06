@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import axios from 'utils/axios';
 import { IBook } from 'types/book';
 import BigBook from 'components/BigBook';
+import Loader from 'components/Loader';
+
 
 export default function BookPage() {
   //const router = useRouter();
@@ -27,7 +29,11 @@ export default function BookPage() {
     }
   }, [isbn13]);
 
-  if (!book) return <h1>LOADING...</h1>;
+  if (!book) return (
+    <>
+      <h1>LOADING...</h1>
+      <Loader />
+    </>);
 
   return <BigBook book={book} />;
 }

@@ -49,7 +49,7 @@ export default function RightDrawer() {
 
   // Formik validation schema
   const validationSchema = Yup.object({
-    isbn13: Yup.string().required('ISBN-13 is required'),
+    isbn13: Yup.string().max(13).required('ISBN-13 is required'),
     authors: Yup.string().required('Authors are required'),
     publication_year: Yup.number()
       .required('Publication Year is required')
@@ -69,6 +69,8 @@ export default function RightDrawer() {
 
       const payload = {
         ...values,
+        original_title: values.original_title[0].toUpperCase() + values.original_title.slice(1) || values.original_title,
+        title: values.title[0].toUpperCase() + values.title.slice(1) || values.original_title,
         image_url: values.image_url || defaultBigImageUrl,
         image_small_url: values.image_small_url || defaultSmallImageUrl,
         ...ratings, // Include the updated ratings object

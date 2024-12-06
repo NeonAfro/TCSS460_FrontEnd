@@ -4,6 +4,7 @@ import axios from "utils/axios";
 import Book from "components/Book";
 import { IBook } from "types/book";
 import Range from "@mui/material/Pagination";
+import Loader from "components/Loader";
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -73,7 +74,11 @@ export default function Pagination() {
       fetchBooks();
     }, [page, limit]);
 
-  if (!data) return <h1>LOADING...</h1>;
+  if (!data) return (
+    <>
+      <h1>LOADING...</h1>
+      <Loader />
+    </>);
   return (
     <div style={styles.container}>
       <div style={styles.grid}>

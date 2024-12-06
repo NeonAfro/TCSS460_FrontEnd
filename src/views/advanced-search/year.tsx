@@ -1,17 +1,37 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import axios from 'utils/axios';
-import SmallBook from 'components/SmallBook'; // Assuming SmallBook is used to render book details
-import { Box, Typography, Popper, Paper, ClickAwayListener } from '@mui/material';
-import debounce from 'lodash.debounce';
+import Book from 'components/Book'; // Assuming SmallBook is used to render book details
+import { Box, Typography } from '@mui/material';
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import HelpOutlineTwoToneIcon from '@mui/icons-material/HelpOutlineTwoTone';
 import IconButton from '@mui/material/IconButton';
 import { IBook } from 'types/book';
+
+const styles = {
+  container: {
+    padding: '20px',
+    width: '100%',
+    maxWidth: '1400px',
+    margin: '0 auto'
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+    gap: '20px',
+    padding: '20px'
+  },
+  flexContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: '20px'
+  }
+};
 
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)(
   ({ theme }) => ({
@@ -67,38 +87,19 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<IBook[]>([]);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce(async (query: string) => {
-      if (query.trim().length === 0) {
-        setSearchResults([]); // Clear results when query is empty
-        return;
-      }
-      query = query[0].toUpperCase() + query.slice(1); // Capitalize the first letter
-      try {
-        const response = await axios.get(`/c/books/original_title/${query}`);
-        setSearchResults(response.data.books || []); // Assuming the response contains `books`
-      } catch (error) {
-        console.error('Error fetching search results:', error);
-        setSearchResults([]); // Clear results on error
-      }
-    }, 300), // Debounce delay (300ms)
-    []
-  );
-
-  const handleSearch = (query: string, target: HTMLElement | null) => {
+  const handleQuerySearch = (query: string, target: HTMLElement | null) => {
     setSearchQuery(query);
-    setAnchorEl(target); // Set the anchor element for the dropdown
-    debouncedSearch(query); // Call the debounced function
   };
 
-  // Clear search results
-  const clearResults = () => {
-    setSearchQuery('');
-    setSearchResults([]);
-    setAnchorEl(null); // Close the dropdown
+  const handleSearch = async (query: string, target: HTMLElement | null) => {
+    try {
+      const response = await axios.get(`/c/books/publication/${searchQuery}`);
+      setSearchResults(response.data.books || []); // Assuming the response contains `books`
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+      setSearchResults([]); // Clear results on error
+    }
   };
 
   return (
@@ -117,38 +118,30 @@ export default function SearchBar() {
             <HelpOutlineTwoToneIcon />
           </IconButton>
         </HtmlTooltip>
+        {/* Search Input */}
         <Search>
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
           <StyledInputBase
-            placeholder="Search by Original Title"
+            placeholder="Search by Year"
             inputProps={{ 'aria-label': 'search' }}
             value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value, e.target)} // Trigger search on input change
-            onFocus={(e) => handleSearch(e.target.value, e.target)} // Show dropdown when focused
+            onChange={(e) => handleQuerySearch(e.target.value, e.target)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch(e.target.value, e.target); // Trigger search on Enter key press
+              }
+            }}
           />
         </Search>
       </div>
 
-      {/* Dropdown Results */}
-      <Popper open={Boolean(anchorEl)} anchorEl={anchorEl} placement="bottom-start" style={{ zIndex: 1300 }}>
-        <ClickAwayListener onClickAway={clearResults}>
-          <Paper style={{ maxHeight: 300, overflowY: 'auto', width: anchorEl?.offsetWidth || 'auto' }}>
-            {searchResults.length > 0 ? (
-              searchResults.map((book) => (
-                <SmallBook
-                  key={book.isbn13}
-                  book={book}
-                  clearResults={clearResults} // Pass the clearResults callback
-                />
-              ))
-            ) : searchQuery.trim() !== '' ? (
-              <Typography>No results found for &quot;{searchQuery}&quot;</Typography>
-            ) : null}
-          </Paper>
-        </ClickAwayListener>
-      </Popper>
-    </Box>
+      {/* Search Results */}
+      <div style={styles.grid}>
+        {searchResults && searchResults.map((book) => <Book key={book.isbn13} book={book} refreshBooks={() => {}} />)}
+      </div>
+
+     </Box>
   );
 }

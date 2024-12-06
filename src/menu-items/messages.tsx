@@ -2,43 +2,38 @@
 import { FormattedMessage } from 'react-intl';
 
 // assets
-import MessageOutlined from '@ant-design/icons/MessageOutlined';
-import EmailIcon from '@mui/icons-material/Email';
-import SendIcon from '@mui/icons-material/Send';
+import ManageSearchTwoToneIcon from '@mui/icons-material/ManageSearchTwoTone';
+import PersonSearchTwoToneIcon from '@mui/icons-material/PersonSearchTwoTone';
+import QueryStatsTwoToneIcon from '@mui/icons-material/QueryStatsTwoTone';
 
 // type
 import { NavItemType } from 'types/menu';
-
-// icons
-const icons = { MessageOutlined, EmailIcon, SendIcon };
 
 // ==============================|| MENU ITEMS - PAGES ||============================== //
 
 const pages: NavItemType = {
   id: 'group-pages',
-  title: <FormattedMessage id="pages" />,
   type: 'group',
   children: [
     {
-      id: 'messages',
-      title: <FormattedMessage id="messages" />,
+      id: 'advanced-search',
+      title: <FormattedMessage id="Advanced Search" />,
       type: 'collapse',
-      icon: icons.MessageOutlined,
+      icon: ManageSearchTwoToneIcon,
       children: [
-        // holds the children of the messages group; send-message and view-messages
         {
-          id: 'send-message',
-          title: <FormattedMessage id="send-message" />,
+          id: 'author',
+          title: <FormattedMessage id="Author" />,
           type: 'item',
-          url: '/messages/send',
-          icon: icons.SendIcon
+          url: '/advanced-search/author',
+          icon: PersonSearchTwoToneIcon
         },
         {
-          id: 'view-messages',
-          title: <FormattedMessage id="view-messages" />,
+          id: 'year',
+          title: <FormattedMessage id="Year" />,
           type: 'item',
-          url: '/messages/list',
-          icon: icons.EmailIcon
+          url: '/advanced-search/year',
+          icon: QueryStatsTwoToneIcon
         }
       ]
     }

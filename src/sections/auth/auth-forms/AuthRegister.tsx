@@ -36,6 +36,7 @@ import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 
 // types
 import { StringColorProps } from 'types/password';
+import { isNumber, isSpecialChar } from 'utils/password-validation';
 
 // ============================|| AWS CONNITO - LOGIN ||============================ //
 
@@ -78,9 +79,11 @@ export default function AuthRegister({ providers, csrfToken }: any) {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string()
             .required('Password is required')
+            .min(7, 'Password must be at least 7 characters')
             .test('no-leading-trailing-whitespace', 'Password cannot start or end with spaces', (value) => value === value.trim())
-            .min(8, 'Password must be at least 7 characters')
-            .max(10, 'Password must be less than 10 characters'),
+            .test('no-special-character', 'Password must have a special character', (value) => isSpecialChar(value))
+            .test('no-number', 'Password must have a number', (value) => isNumber(value))
+            .max(20, 'Password must be less than 20 characters'),
           phone: Yup.string().max(12).required('Phone Number is required')
         })}
         onSubmit={async (values, { setErrors, setSubmitting }) => {

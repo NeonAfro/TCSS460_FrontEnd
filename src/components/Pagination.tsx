@@ -53,6 +53,7 @@ export default function Pagination() {
   const handleLimitChange = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
       const lim = Number((event.target as HTMLInputElement).value);
+      if (lim <= 0) return;
       setLimit(lim);
       setMaxBooks(Math.round(bookCount / lim));
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
@@ -74,6 +74,10 @@ export default function SearchBar() {
   const [maxBooks, setMaxBooks] = useState(0);
   const [bookCount, setBookCount] = useState(10000);
 
+  useEffect(() => {
+    fetchBooks();
+  }, [page, limit]);
+
   const fetchBooks = async () => {
     handleSearch(searchQuery);
   };
@@ -85,6 +89,7 @@ export default function SearchBar() {
   const handleLimitChange = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
       const lim = Number((event.target as HTMLInputElement).value);
+      if (lim <= 0) return;
       setLimit(lim);
       setMaxBooks(Math.round(bookCount / lim));
       handleSearch(searchQuery);

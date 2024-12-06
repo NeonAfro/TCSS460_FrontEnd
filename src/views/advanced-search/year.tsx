@@ -5,28 +5,12 @@ import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import axios from 'utils/axios';
-import Book from 'components/Book';
 import { Box, Typography } from '@mui/material';
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import HelpOutlineTwoToneIcon from '@mui/icons-material/HelpOutlineTwoTone';
 import IconButton from '@mui/material/IconButton';
 import { IBook } from 'types/book';
-
-// Styles
-const styles = {
-  container: {
-    padding: '20px',
-    width: '100%',
-    maxWidth: '1400px',
-    margin: '0 auto'
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-    gap: '20px',
-    padding: '20px'
-  }
-};
+import BigPagination from 'components/BigPagination';
 
 // Custom Tooltip
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)(
@@ -84,16 +68,40 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 // SearchBar Component
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<IBook[]>([]);
+  const [searchResults, setSearchResults] = useState<IBook[][]>([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(30);
+  const [maxBooks, setMaxBooks] = useState(0);
+  const [bookCount, setBookCount] = useState(10000);
+
+  const fetchBooks = async () => {
+    handleSearch(searchQuery);
+  };
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
+  const handleLimitChange = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      const lim = Number((event.target as HTMLInputElement).value);
+      setLimit(lim);
+      setMaxBooks(Math.round(bookCount / lim));
+    }
+  };
 
   // Handle search request
   const handleSearch = async (query: string) => {
     try {
-      console.log('Searching for:', query); // Debugging query
       const response = await axios.get(`/c/books/publication/${query}`);
-      console.log('Raw Response:', response); // Log the raw response object
-      console.log('Search Results:', response.data.book); // Correctly access the `book` array
-      setSearchResults(response.data.book || []); // Use the correct key
+      const count = response.data.book.length;
+      const data: IBook[][] = [];
+      for (let i = 0; i < limit; i++) {
+        data.push(response.data.book.slice(i * limit, (i + 1) * limit));
+      }
+      setMaxBooks(Math.round(count / limit));
+      setBookCount(count);
+      setSearchResults(data || []); // Use the correct key
     } catch (error) {
       console.error('Error fetching search results:', error);
       setSearchResults([]); // Clear results on error
@@ -135,13 +143,19 @@ export default function SearchBar() {
       </div>
 
       {/* Search Results */}
-      <div style={styles.grid}>
-        {searchResults.length > 0 ? (
-          searchResults.map((book) => <Book key={book.isbn13} book={book} refreshBooks={() => {}} />)
-        ) : searchQuery.trim() ? (
-          <Typography>No results found for "{searchQuery}"</Typography>
-        ) : null}
-      </div>
+      {searchResults.length ? (
+        <BigPagination
+          data={searchResults}
+          page={page}
+          limit={limit}
+          maxBooks={maxBooks}
+          pageChange={handlePageChange}
+          limitChange={handleLimitChange}
+          fetchBooks={fetchBooks}
+        />
+      ) : searchQuery.trim() ? (
+        <Typography>No results found for "{searchQuery}"</Typography>
+      ) : null}
     </Box>
   );
 }

@@ -11,28 +11,29 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: '10px',
-    position: 'relative'
+    gap: '20px', 
+    position: 'relative',
+    padding: '20px',
+    backgroundColor: '#ffffff',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+    borderRadius: '8px',
+    maxWidth: '90%',
+    margin: '20px auto', 
   },
   image: {
-    width: '200px',
-    height: '300px',
-    objectFit: 'cover'
+    width: '100%',
+    maxWidth: '200px',
+    height: 'auto',
   },
   details: {
-    position: 'relative',
+    flexGrow: 1,
     backgroundColor: '#f5f5f5',
-    padding: '5px 10px',
-    borderRadius: '4px',
+    padding: '20px',
+    borderRadius: '8px',
     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-    fontSize: '0.8rem',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    lineHeight: '1.2',
-    height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between'
+    gap: '10px', 
   },
   deleteIcon: {
     position: 'absolute',
@@ -81,19 +82,25 @@ export default function BigBook({ book, refreshBooks }: BookProps & { refreshBoo
         {/* Book Details */}
         <div style={styles.details}>
           <DeleteIcon style={styles.deleteIcon} onClick={handleDelete} />
-          <h2>{book.title}</h2>
-          <p>
+
+          {/* Title */}
+          <Typography variant="h3" gutterBottom>
+            {book.title}
+          </Typography>
+
+          {/* Book Information */}
+          <Typography variant="h6">
             <strong>ISBN-13:</strong> {book.isbn13}
-          </p>
-          <p>
+          </Typography>
+          <Typography variant="h6">
             <strong>Authors:</strong> {book.authors}
-          </p>
-          <p>
+          </Typography>
+          <Typography variant="h6">
             <strong>Publication Year:</strong> {book.publication}
-          </p>
-          <p>
+          </Typography>
+          <Typography variant="h6">
             <strong>Original Title:</strong> {book.original_title}
-          </p>
+          </Typography>
         </div>
       </div>
 
@@ -102,7 +109,7 @@ export default function BigBook({ book, refreshBooks }: BookProps & { refreshBoo
         <Box
           sx={{
             ...styles.feedback,
-            backgroundColor: feedbackColor
+            backgroundColor: feedbackColor,
           }}
         >
           <Typography>{feedbackMessage}</Typography>

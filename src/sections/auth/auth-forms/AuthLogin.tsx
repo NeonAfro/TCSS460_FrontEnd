@@ -179,9 +179,9 @@ export default function AuthLogin({ providers, csrfToken }: any) {
                     }
                     label={<Typography variant="h6">Keep me sign in</Typography>}
                   />
-                  <NextLink href={'/forget-pass'} passHref legacyBehavior>
+                  <NextLink href={'/reset-pass'} passHref legacyBehavior>
                     <Link variant="h6" color="text.primary">
-                      Forgot Password?
+                      Change Password?
                     </Link>
                   </NextLink>
                 </Stack>

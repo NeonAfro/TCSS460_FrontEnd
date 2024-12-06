@@ -115,14 +115,16 @@ export default function AuthResetPassword() {
             window.location.href = '/login';
           }
         } catch (err: any) {
-          console.error(err);
+          console.error('Error occurred:', err); // Log the error for debugging
+        
+          // Directly assume the error is "Old password does not match"
+          const errorMessage = 'The old password you entered is incorrect. Please try again.';
+        
           setStatus({ success: false });
-          setErrors({
-            submit: err.response?.data?.message || 'An error occurred.',
-          });
+          setErrors({ submit: errorMessage });
           setSubmitting(false);
         }
-      }}
+      }}        
     >
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
         <form noValidate onSubmit={handleSubmit}>

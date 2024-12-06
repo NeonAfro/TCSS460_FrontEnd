@@ -16,9 +16,20 @@ function getLabelText(value: number) {
   return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
 }
 
-export default function HoverRating() {
+interface HoverRatingProps {
+  onRatingChange: (rating: number) => void; // Define the prop for handling rating changes
+}
+
+export default function HoverRating({ onRatingChange }: HoverRatingProps) {
   const [value, setValue] = React.useState<number | null>(0);
   const [hover, setHover] = React.useState(-1);
+
+  const handleRatingChange = (_event: React.SyntheticEvent, newValue: number | null) => {
+    setValue(newValue);
+    if (newValue !== null) {
+      onRatingChange(newValue); // Call the parent callback with the selected rating
+    }
+  };
 
   return (
     <Box sx={{ width: 200, display: 'flex', alignItems: 'center' }}>
@@ -27,9 +38,7 @@ export default function HoverRating() {
         value={value}
         precision={1}
         getLabelText={getLabelText}
-        onChange={(event, newValue) => {
-          setValue(newValue);
-        }}
+        onChange={handleRatingChange} // Use the modified handler
         onChangeActive={(event, newHover) => {
           setHover(newHover);
         }}
@@ -42,5 +51,6 @@ export default function HoverRating() {
     </Box>
   );
 }
+
 
 

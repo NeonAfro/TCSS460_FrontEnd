@@ -1,24 +1,21 @@
 'use client';
 
 import { useEffect, useState, SyntheticEvent } from 'react';
+import axios from 'utils/axios';
 
 // next
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { signIn } from 'next-auth/react';
 
 // material-ui
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 
-// third party
+// third-party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
@@ -26,26 +23,19 @@ import { Formik } from 'formik';
 import IconButton from 'components/@extended/IconButton';
 import AnimateButton from 'components/@extended/AnimateButton';
 
-import { openSnackbar } from 'api/snackbar';
-import useScriptRef from 'hooks/useScriptRef';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // types
-import { SnackbarProps } from 'types/snackbar';
 import { StringColorProps } from 'types/password';
 
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 
-// ============================|| STATIC - RESET PASSWORD ||============================ //
-
 export default function AuthResetPassword() {
-  const scriptedRef = useScriptRef();
-  const router = useRouter();
-
   const [level, setLevel] = useState<StringColorProps>();
   const [showPassword, setShowPassword] = useState(false);
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -70,50 +60,56 @@ export default function AuthResetPassword() {
         oldPassword: '',
         newPassword: '',
         confirmPassword: '',
-        submit: null
+        submit: null,
       }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+        email: Yup.string()
+          .email('Must be a valid email')
+          .max(255)
+          .required('Email is required'),
         oldPassword: Yup.string().max(255).required('Old password is required'),
         newPassword: Yup.string()
-        .required('New password is required')
-        .test('password-checker', 'New password cannot be the same as the old password', (newPassword, yup) => yup.parent.oldPassword !== newPassword),
+          .required('New password is required')
+          .test(
+            'not-same-as-old-password',
+            'New password cannot be the same as the old password',
+            function (value) {
+              return value !== this.parent.oldPassword;
+            }
+          ),
         confirmPassword: Yup.string()
           .required('Confirm Password is required')
-          .test('confirmPassword', 'Both Password must be match!', (confirmPassword, yup) => yup.parent.newPassword === confirmPassword)
+          .oneOf([Yup.ref('newPassword')], 'Both passwords must match!'),
       })}
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
-          const response = await axios.post('/change_password', {
+          const response = await axios.put('/change_password', {
             email: values.email,
             oldPassword: values.oldPassword,
-            newPassword: values.newPassword
+            newPassword: values.newPassword,
           });
-          // password reset
-          if (scriptedRef.current) {
+
+          if (response.status === 200) {
             setStatus({ success: true });
             setSubmitting(false);
 
-            openSnackbar({
-              open: true,
-              message: 'Successfuly changed password.',
-              variant: 'alert',
-              alert: {
-                color: 'success'
-              }
-            } as SnackbarProps);
+            // Log the user in after password change
+            await signIn('credentials', {
+              redirect: false,
+              email: values.email,
+              password: values.newPassword,
+            });
 
-            setTimeout(() => {
-              router.push('/login');
-            }, 1500);
+            // Redirect to login page
+            window.location.href = '/login';
           }
         } catch (err: any) {
           console.error(err);
-          if (scriptedRef.current) {
-            setStatus({ success: false });
-            setErrors({ submit: err.message });
-            setSubmitting(false);
-          }
+          setStatus({ success: false });
+          setErrors({
+            submit: err.response?.data?.message || 'An error occurred.',
+          });
+          setSubmitting(false);
         }
       }}
     >
@@ -143,7 +139,7 @@ export default function AuthResetPassword() {
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <InputLabel htmlFor="password-reset-old">Password</InputLabel>
+                <InputLabel htmlFor="password-reset-old">Old Password</InputLabel>
                 <OutlinedInput
                   fullWidth
                   error={Boolean(touched.oldPassword && errors.oldPassword)}
@@ -177,7 +173,7 @@ export default function AuthResetPassword() {
                   {errors.oldPassword}
                 </FormHelperText>
               )}
-              </Grid>
+            </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
                 <InputLabel htmlFor="password-reset-new">New Password</InputLabel>
@@ -214,18 +210,6 @@ export default function AuthResetPassword() {
                   {errors.newPassword}
                 </FormHelperText>
               )}
-              <FormControl fullWidth sx={{ mt: 2 }}>
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item>
-                    <Box sx={{ bgcolor: level?.color, width: 85, height: 8, borderRadius: '7px' }} />
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="subtitle1" fontSize="0.75rem">
-                      {level?.label}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
@@ -248,7 +232,6 @@ export default function AuthResetPassword() {
                 </FormHelperText>
               )}
             </Grid>
-
             {errors.submit && (
               <Grid item xs={12}>
                 <FormHelperText error>{errors.submit}</FormHelperText>
@@ -256,7 +239,15 @@ export default function AuthResetPassword() {
             )}
             <Grid item xs={12}>
               <AnimateButton>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
+                <Button
+                  disableElevation
+                  disabled={isSubmitting}
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                >
                   Change Password
                 </Button>
               </AnimateButton>

@@ -4,6 +4,7 @@ import { useEffect, useState, SyntheticEvent } from 'react';
 
 // next
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 // material-ui
 import Box from '@mui/material/Box';
@@ -83,6 +84,11 @@ export default function AuthResetPassword() {
       })}
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
+          const response = await axios.put('/api/auth/change_password', {
+            email: values.email,
+            oldPassword: values.oldPassword,
+            newPassword: values.newPassword
+          });
           // password reset
           if (scriptedRef.current) {
             setStatus({ success: true });
@@ -90,7 +96,7 @@ export default function AuthResetPassword() {
 
             openSnackbar({
               open: true,
-              message: 'Successfuly reset password.',
+              message: 'Successfuly changed password.',
               variant: 'alert',
               alert: {
                 color: 'success'

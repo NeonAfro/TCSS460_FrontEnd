@@ -65,15 +65,21 @@ export default function AuthResetPassword() {
   return (
     <Formik
       initialValues={{
-        password: '',
+        email: '',
+        oldPassword: '',
+        newPassword: '',
         confirmPassword: '',
         submit: null
       }}
       validationSchema={Yup.object().shape({
-        password: Yup.string().max(255).required('Password is required'),
+        email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+        oldPassword: Yup.string().max(255).required('Old password is required'),
+        newPassword: Yup.string()
+        .required('New password is required')
+        .test('password-checker', 'New password cannot be the same as the old password', (newPassword, yup) => yup.parent.oldPassword !== newPassword),
         confirmPassword: Yup.string()
           .required('Confirm Password is required')
-          .test('confirmPassword', 'Both Password must be match!', (confirmPassword, yup) => yup.parent.password === confirmPassword)
+          .test('confirmPassword', 'Both Password must be match!', (confirmPassword, yup) => yup.parent.newPassword === confirmPassword)
       })}
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
@@ -110,14 +116,35 @@ export default function AuthResetPassword() {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <InputLabel htmlFor="password-reset">Password</InputLabel>
+                <InputLabel htmlFor="email-reset">Email Address</InputLabel>
                 <OutlinedInput
                   fullWidth
-                  error={Boolean(touched.password && errors.password)}
-                  id="password-reset"
+                  error={Boolean(touched.email && errors.email)}
+                  id="email-reset"
+                  type="email"
+                  value={values.email}
+                  name="email"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  placeholder="Enter user email"
+                />
+              </Stack>
+              {touched.email && errors.email && (
+                <FormHelperText error id="helper-text-password-reset-email">
+                  {errors.email}
+                </FormHelperText>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <Stack spacing={1}>
+                <InputLabel htmlFor="password-reset-old">Password</InputLabel>
+                <OutlinedInput
+                  fullWidth
+                  error={Boolean(touched.oldPassword && errors.oldPassword)}
+                  id="password-reset-old"
                   type={showPassword ? 'text' : 'password'}
-                  value={values.password}
-                  name="password"
+                  value={values.oldPassword}
+                  name="oldPassword"
                   onBlur={handleBlur}
                   onChange={(e) => {
                     handleChange(e);
@@ -136,12 +163,49 @@ export default function AuthResetPassword() {
                       </IconButton>
                     </InputAdornment>
                   }
-                  placeholder="Enter password"
+                  placeholder="Enter old password"
                 />
               </Stack>
-              {touched.password && errors.password && (
+              {touched.oldPassword && errors.oldPassword && (
                 <FormHelperText error id="helper-text-password-reset">
-                  {errors.password}
+                  {errors.oldPassword}
+                </FormHelperText>
+              )}
+              </Grid>
+            <Grid item xs={12}>
+              <Stack spacing={1}>
+                <InputLabel htmlFor="password-reset-new">New Password</InputLabel>
+                <OutlinedInput
+                  fullWidth
+                  error={Boolean(touched.newPassword && errors.newPassword)}
+                  id="password-reset-new"
+                  type={showPassword ? 'text' : 'password'}
+                  value={values.newPassword}
+                  name="newPassword"
+                  onBlur={handleBlur}
+                  onChange={(e) => {
+                    handleChange(e);
+                    changePassword(e.target.value);
+                  }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                        color="secondary"
+                      >
+                        {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  placeholder="Enter new password"
+                />
+              </Stack>
+              {touched.newPassword && errors.newPassword && (
+                <FormHelperText error id="helper-text-password-reset">
+                  {errors.newPassword}
                 </FormHelperText>
               )}
               <FormControl fullWidth sx={{ mt: 2 }}>
@@ -159,11 +223,11 @@ export default function AuthResetPassword() {
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <InputLabel htmlFor="confirm-password-reset">Confirm Password</InputLabel>
+                <InputLabel htmlFor="confirm-password-change">Confirm Password</InputLabel>
                 <OutlinedInput
                   fullWidth
                   error={Boolean(touched.confirmPassword && errors.confirmPassword)}
-                  id="confirm-password-reset"
+                  id="confirm-password-change"
                   type="password"
                   value={values.confirmPassword}
                   name="confirmPassword"
@@ -173,7 +237,7 @@ export default function AuthResetPassword() {
                 />
               </Stack>
               {touched.confirmPassword && errors.confirmPassword && (
-                <FormHelperText error id="helper-text-confirm-password-reset">
+                <FormHelperText error id="helper-text-confirm-password-change">
                   {errors.confirmPassword}
                 </FormHelperText>
               )}
@@ -187,7 +251,7 @@ export default function AuthResetPassword() {
             <Grid item xs={12}>
               <AnimateButton>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                  Reset Password
+                  Change Password
                 </Button>
               </AnimateButton>
             </Grid>

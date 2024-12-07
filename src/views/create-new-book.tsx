@@ -23,13 +23,46 @@ class Ratings {
 export default function RightDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
-  const [ratings, setRatings] = useState<Ratings>(
-    new Ratings(0, 0, 0, 0, 0, 0, 0) // Initialize ratings
-  );
+  const [ratings, setRatings] = useState<{
+    rating_avg: number;
+    rating_count: number;
+    rating_1_star: number;
+    rating_2_star: number;
+    rating_3_star: number;
+    rating_4_star: number;
+    rating_5_star: number;
+  }>({
+    rating_avg: 0,
+    rating_count: 1,
+    rating_1_star: 0,
+    rating_2_star: 0,
+    rating_3_star: 0,
+    rating_4_star: 0,
+    rating_5_star: 0,
+  });
 
-  // Validation schema for Formik
+  // Handle rating changes
+  const handleRatingChange = (selectedRating: number) => {
+    // Reset all ratings to 0 and set the selected rating to 1
+    const newRatings = {
+      rating_avg: selectedRating,
+      rating_count: 1,
+      rating_1_star: 0,
+      rating_2_star: 0,
+      rating_3_star: 0,
+      rating_4_star: 0,
+      rating_5_star: 0,
+    };
+
+    // Dynamically set the selected star rating to 1
+    const ratingKey = `rating_${selectedRating}_star` as keyof typeof newRatings; // Type assertion
+    newRatings[ratingKey] = 1;
+    setRatings(newRatings);
+  };
+
+  // Formik validation schema
   const validationSchema = Yup.object({
-    isbn13: Yup.string().required('ISBN-13 is required'),
+    isbn13: Yup.string().max(13).required('ISBN-13 is required'),
     authors: Yup.string().required('Authors are required'),
     publication_year: Yup.number()
       .required('Publication Year is required')
@@ -40,36 +73,26 @@ export default function RightDrawer() {
     image_small_url: Yup.string().url('Must be a valid URL'),
   });
 
-  // Update the ratings state when a user selects a rating
-  const handleRatingChange = (selectedRating: number) => {
-    const newRatings = new Ratings(0, 1, 0, 0, 0, 0, 0); // Reset all counts to 0
-    newRatings[`rating_${selectedRating}_star` as keyof Ratings] = 1; // Set the selected rating to 1
-    newRatings.rating_avg = selectedRating; // Update average rating
-    setRatings(newRatings); // Update state
-  };
-
-  const handleClick = async (values: any, { resetForm }: any) => {
+  const handleSubmit = async (values: any, { resetForm }: any) => {
     try {
-      // Add default image URLs if not provided
       const defaultSmallImageUrl =
-        "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";
-
-      const defaultBigImageUrl = "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";  
+        'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png';
+      const defaultBigImageUrl =
+        'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png';
 
       const payload = {
         ...values,
+        original_title: values.original_title[0].toUpperCase() + values.original_title.slice(1) || values.original_title,
+        title: values.title[0].toUpperCase() + values.title.slice(1) || values.original_title,
         image_url: values.image_url || defaultBigImageUrl,
         image_small_url: values.image_small_url || defaultSmallImageUrl,
+        ...ratings, // Include the updated ratings object
       };
-  
-      // Axios POST request
+
       const response = await axios.post('/c/books/book', payload);
       console.log('Success:', response.data);
-  
-      // Show success message
+
       setFeedbackMessage('Book was successfully created!');
-  
-      // Close the drawer and reset the form after a short delay
       setTimeout(() => {
         setIsOpen(false);
         setFeedbackMessage('');
@@ -77,19 +100,13 @@ export default function RightDrawer() {
       }, 2000);
     } catch (error) {
       console.error('Error:', error);
-  
-      // Show error message
       setFeedbackMessage('Invalid input. Please check the form and try again.');
-  
-      // Keep the drawer open for user corrections
       setTimeout(() => setFeedbackMessage(''), 3000);
     }
   };
-  
 
   return (
     <>
-      {/* Button to toggle the drawer */}
       <Box
         sx={{
           position: 'fixed',
@@ -105,11 +122,10 @@ export default function RightDrawer() {
           onClick={() => setIsOpen(!isOpen)}
           sx={{ borderRadius: '0 4px 4px 0' }}
         >
-          {isOpen ? '' : 'New Book'}
+          {isOpen ? 'Close' : 'New Book'}
         </Button>
       </Box>
 
-      {/* Drawer Component */}
       <Drawer
         anchor="right"
         open={isOpen}
@@ -122,12 +138,13 @@ export default function RightDrawer() {
           },
         }}
       >
-        {/* Drawer Content */}
         <Box>
           <Typography variant="h6" gutterBottom>
             Add New Book
           </Typography>
+
           <HoverRating onRatingChange={handleRatingChange} />
+
           <Formik
             initialValues={{
               isbn13: '',
@@ -139,7 +156,7 @@ export default function RightDrawer() {
               image_small_url: '',
             }}
             validationSchema={validationSchema}
-            onSubmit={handleClick}
+            onSubmit={handleSubmit}
           >
             {({ errors, touched }) => (
               <Form>
@@ -221,7 +238,6 @@ export default function RightDrawer() {
         </Box>
       </Drawer>
 
-      {/* Feedback Message */}
       {feedbackMessage && (
         <Box
           sx={{

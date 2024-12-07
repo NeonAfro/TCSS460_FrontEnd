@@ -22,29 +22,14 @@ const icons = {
 
 const other: NavItemType = {
   id: 'other',
-  title: <FormattedMessage id="others" />,
+  title: <FormattedMessage id="Support" />,
   type: 'group',
   children: [
-    {
-      id: 'disabled-menu',
-      title: <FormattedMessage id="disabled-menu" />,
-      type: 'item',
-      url: '#',
-      icon: icons.StopOutlined,
-      disabled: true
-    },
-    {
-      id: 'full-page',
-      title: <FormattedMessage id="full-page" />,
-      type: 'item',
-      url: '/full-page',
-      icon: icons.FullscreenOutlined
-    },
     {
       id: 'documentation',
       title: <FormattedMessage id="documentation" />,
       type: 'item',
-      url: 'https://uwt-set-tcss460-lecture-materials.github.io/TCSS460-phase-2/',
+      url: 'https://huyhuynh2k2.github.io/Back-End/',
       icon: icons.QuestionOutlined,
       external: true,
       target: true

@@ -1,7 +1,7 @@
 // project import
 import booksPage from './books-page';
 import other from './other';
-import pages from './messages';
+import pages from './advanced-search';
 
 // types
 import { NavItemType } from 'types/menu';

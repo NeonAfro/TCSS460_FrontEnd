@@ -3,7 +3,6 @@ import Rating from '@mui/material/Rating'; // MUI Rating Component
 import { Typography, Button } from '@mui/material';
 import axios from 'utils/axios';
 import { BookProps } from 'types/book';
-import { round } from 'lodash';
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {

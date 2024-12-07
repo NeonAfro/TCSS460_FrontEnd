@@ -62,7 +62,8 @@ export default function RightDrawer() {
 
   // Formik validation schema
   const validationSchema = Yup.object({
-    isbn13: Yup.string().max(13).required('ISBN-13 is required'),
+    isbn13: Yup.string().length(13, 'ISBN-13 must be exactly 13 characters long')
+    .required('ISBN-13 is required'),
     authors: Yup.string().required('Authors are required'),
     publication_year: Yup.number()
       .required('Publication Year is required')

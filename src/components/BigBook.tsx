@@ -52,11 +52,11 @@ export default function BigBook({ book }: BookProps) {
 
     // Prepare new rating counts
     const ratingCounts = {
-      oneStar: (newRating === 1 ? 1 : 0),
-      twoStar: (newRating === 2 ? 1 : 0),
-      threeStar: (newRating === 3 ? 1 : 0),
-      fourStar: (newRating === 4 ? 1 : 0),
-      fiveStar: (newRating === 5 ? 1 : 0),
+      oneStar: newRating === 1 ? 1 : 0,
+      twoStar: newRating === 2 ? 1 : 0,
+      threeStar: newRating === 3 ? 1 : 0,
+      fourStar: newRating === 4 ? 1 : 0,
+      fiveStar: newRating === 5 ? 1 : 0,
     };
 
     try {
@@ -66,6 +66,11 @@ export default function BigBook({ book }: BookProps) {
       );
 
       setFeedbackMessage('Your rating has been submitted successfully!');
+
+      // Refresh the page after a short delay
+      setTimeout(() => {
+        window.location.reload(); // Refresh the page
+      }, 1000); // 1-second delay for user feedback
     } catch (error) {
       console.error('Error submitting rating:', error);
       setFeedbackMessage('Failed to submit your rating. Please try again.');
@@ -87,7 +92,7 @@ export default function BigBook({ book }: BookProps) {
               precision={0.1}
               readOnly
             />
-            <p>{Math.round(book.ratings.average * 10) /10}</p>
+            <p>{Math.round(book.ratings.average * 10) / 10}</p>
           </div>
           {/* Title */}
           <Typography variant="h3" gutterBottom>

@@ -12,20 +12,20 @@ const styles = {
     padding: '20px',
     width: '100%',
     maxWidth: '1400px',
-    margin: '0 auto',
+    margin: '0 auto'
   },
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
     gap: '20px',
-    padding: '20px',
+    padding: '20px'
   },
   flexContainer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: '20px',
-  },
+    marginTop: '20px'
+  }
 };
 
 interface PaginationProps {
@@ -47,7 +47,7 @@ export default function Pagination({
   pageChange,
   limitChange,
   fetchBooks,
-  setPage, // Add setPage as an optional prop
+  setPage // Add setPage as an optional prop
 }: PaginationProps) {
   if (!data) {
     return (
@@ -65,11 +65,7 @@ export default function Pagination({
 
   return (
     <div style={styles.container}>
-      <div style={styles.grid}>
-        {data[page - 1]?.map((book) => (
-          <Book key={book.isbn13} book={book} refreshBooks={fetchBooks} />
-        ))}
-      </div>
+      <div style={styles.grid}>{data[page - 1]?.map((book) => <Book key={book.isbn13} book={book} refreshBooks={fetchBooks} />)}</div>
       <div style={styles.flexContainer}>
         <Range count={maxBooks} color="primary" onChange={pageChange} page={page} />
         <Box
@@ -79,14 +75,7 @@ export default function Pagination({
           autoComplete="off"
           onSubmit={(event) => event.preventDefault()}
         >
-          <TextField
-            label="Limit"
-            id="filled-size-small"
-            defaultValue={limit}
-            variant="filled"
-            size="small"
-            onKeyDown={limitChange}
-          />
+          <TextField label="Limit" id="filled-size-small" defaultValue={limit} variant="filled" size="small" onKeyDown={limitChange} />
         </Box>
       </div>
     </div>

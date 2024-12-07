@@ -1,38 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import axios from 'utils/axios';
-import Book from 'components/Book'; // Assuming SmallBook is used to render book details
 import { Box, Typography } from '@mui/material';
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import HelpOutlineTwoToneIcon from '@mui/icons-material/HelpOutlineTwoTone';
 import IconButton from '@mui/material/IconButton';
 import { IBook } from 'types/book';
+import BigPagination from 'components/BigPagination';
 
-const styles = {
-  container: {
-    padding: '20px',
-    width: '100%',
-    maxWidth: '1400px',
-    margin: '0 auto'
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-    gap: '20px',
-    padding: '20px'
-  },
-  flexContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: '20px'
-  }
-};
 
+// Custom Tooltip
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)(
   ({ theme }) => ({
     [`& .${tooltipClasses.tooltip}`]: {
@@ -45,6 +26,7 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {
   })
 );
 
+// Search Input Styling
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -84,18 +66,49 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   }
 }));
 
+// SearchBar Component
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<IBook[]>([]);
+  const [searchResults, setSearchResults] = useState<IBook[][]>([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(30);
+  const [maxBooks, setMaxBooks] = useState(0);
+  const [bookCount, setBookCount] = useState(10000);
 
-  const handleQuerySearch = (query: string, target: HTMLElement | null) => {
-    setSearchQuery(query);
+  useEffect(() => {
+    fetchBooks();
+  }, [page, limit]);
+
+  const fetchBooks = async () => {
+    handleSearch(searchQuery);
   };
 
-  const handleSearch = async (query: string, target: HTMLElement | null) => {
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
+  const handleLimitChange = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      const lim = Number((event.target as HTMLInputElement).value);
+      if (lim <= 0) return;
+      setLimit(lim);
+      setMaxBooks(Math.round(bookCount / lim));
+      handleSearch(searchQuery);
+    }
+  };
+
+  // Handle search request
+  const handleSearch = async (query: string) => {
     try {
       const response = await axios.get(`/c/books/author/${searchQuery}`);
-      setSearchResults(response.data.books || []); // Assuming the response contains `books`
+      const count = response.data.books.length;
+      const data: IBook[][] = [];
+      for (let i = 0; i < limit; i++) {
+        data.push(response.data.books.slice(i * limit, (i + 1) * limit));
+      }
+      setMaxBooks(Math.round(count / limit));
+      setBookCount(count);
+      setSearchResults(data || []); // Use the correct key
     } catch (error) {
       console.error('Error fetching search results:', error);
       setSearchResults([]); // Clear results on error
@@ -104,13 +117,13 @@ export default function SearchBar() {
 
   return (
     <Box>
-      {/* Search Input */}
+      {/* Search Input and Tooltip */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <HtmlTooltip
           title={
             <React.Fragment>
               <Typography color="inherit">How to Search</Typography>
-              {'Searches must'} <em>{'precisely'}</em> {'match the original title of the book.'}
+              {'Search by author, for multiple, comma separate.'} <br></br> {'Example:'} <em>{'J.K. Rowling'}</em>.
             </React.Fragment>
           }
         >
@@ -118,7 +131,6 @@ export default function SearchBar() {
             <HelpOutlineTwoToneIcon />
           </IconButton>
         </HtmlTooltip>
-        {/* Search Input */}
         <Search>
           <SearchIconWrapper>
             <SearchIcon />
@@ -127,10 +139,10 @@ export default function SearchBar() {
             placeholder="Search by Author(s)"
             inputProps={{ 'aria-label': 'search' }}
             value={searchQuery}
-            onChange={(e) => handleQuerySearch(e.target.value, e.target)}
+            onChange={(e) => setSearchQuery(e.target.value)} // Update query but don't trigger search
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
-                handleSearch(e.target.value, e.target); // Trigger search on Enter key press
+                handleSearch(searchQuery); // Trigger search on Enter key press
               }
             }}
           />
@@ -138,10 +150,20 @@ export default function SearchBar() {
       </div>
 
       {/* Search Results */}
-      <div style={styles.grid}>
-        {searchResults && searchResults.map((book) => <Book key={book.isbn13} book={book} refreshBooks={() => {}} />)}
-      </div>
-
-     </Box>
+      {searchResults.length ? (
+        <BigPagination
+          data={searchResults}
+          page={page}
+          limit={limit}
+          maxBooks={maxBooks}
+          pageChange={handlePageChange}
+          limitChange={handleLimitChange}
+          fetchBooks={fetchBooks}
+          setPage={setPage}
+        />
+      ) : searchQuery.trim() ? (
+        <Typography>No results found for "{searchQuery}"</Typography>
+      ) : null}
+    </Box>
   );
 }

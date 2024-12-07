@@ -88,7 +88,7 @@ export default function AuthRegister({ providers, csrfToken }: any) {
         })}
         onSubmit={async (values, { setErrors, setSubmitting }) => {
           const trimmedEmail = values.email.trim();
-          const trimmedPhone = values.phone.replaceAll('-', '').replaceAll(' ', ''); // Remove hyphen from phone number
+          const trimmedPhone = values.phone.replaceAll('-', '').replaceAll(' ', '').trim(); // Remove hyphen from phone number
           signIn('register', {
             redirect: false,
             firstname: values.firstname,
